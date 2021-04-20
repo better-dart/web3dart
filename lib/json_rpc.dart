@@ -3,6 +3,7 @@ library json_rpc;
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:dust/dust.dart';
 import 'package:http/http.dart';
 
 class JsonRPC {
@@ -39,7 +40,7 @@ class JsonRPC {
       body: json.encode(requestPayload),
     );
 
-    print('debugX - web3dart jsonRPC: post done, url=$url, req:$requestPayload, resp:${response?.body}');
+    logger.i('debugX - web3dart jsonRPC: post done, url=$url, req:$requestPayload, resp:${response?.body}');
 
     final data = json.decode(response.body) as Map<String, dynamic>;
     final id = data['id'] as int;
