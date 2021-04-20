@@ -60,7 +60,6 @@ class ContractAbi {
 
   ContractAbi(this.name, this.functions, this.events);
 
-
   @override
   String toString() {
     return 'ContractAbi{name: $name, functions: $functions, events: $events}';
@@ -80,8 +79,7 @@ class ContractAbi {
         final components = <EventComponent>[];
 
         for (final entry in element['inputs']) {
-          components.add(EventComponent(
-              _parseParam(entry as Map), entry['indexed'] as bool));
+          components.add(EventComponent(_parseParam(entry as Map), entry['indexed'] as bool));
         }
 
         events.add(ContractEvent(anonymous, name, components));
@@ -130,12 +128,10 @@ class ContractAbi {
     }
   }
 
-  static CompositeFunctionParameter _parseTuple(
-      String name, String typeName, List<FunctionParameter> components) {
+  static CompositeFunctionParameter _parseTuple(String name, String typeName, List<FunctionParameter> components) {
     // The type will have the form tuple[3][]...[1], where the indices after the
     // tuple indicate that the type is part of an array.
-    assert(RegExp(r'^tuple(?:\[\d*\])*$').hasMatch(typeName),
-        '$typeName is an invalid tuple type');
+    assert(RegExp(r'^tuple(?:\[\d*\])*$').hasMatch(typeName), '$typeName is an invalid tuple type');
 
     final arrayLengths = <int>[];
     var remainingName = typeName;
@@ -191,8 +187,7 @@ class ContractFunction {
   /// of the blockchain when called. This allows the function to be called
   /// without sending Ether or gas as the connected client can compute it
   /// locally, no expensive mining will be required.
-  bool get isConstant =>
-      mutability == StateMutability.view || mutability == StateMutability.pure;
+  bool get isConstant => mutability == StateMutability.view || mutability == StateMutability.pure;
 
   /// Returns true if this function can be used to send Ether to a smart
   /// contract that the contract will actually keep. Normally, all Ether sent
@@ -208,6 +203,11 @@ class ContractFunction {
     this.type = ContractFunctionType.function,
     this.mutability = StateMutability.nonPayable,
   });
+
+  @override
+  String toString() {
+    return 'ContractFunction{name: $name, type: $type, parameters: $parameters, outputs: $outputs, mutability: $mutability}';
+  }
 
   /// Encodes a call to this function with the specified parameters for a
   /// transaction or a call that can be sent to the network.
@@ -226,16 +226,14 @@ class ContractFunction {
   /// Other types are not supported at the moment.
   Uint8List encodeCall(List<dynamic> params) {
     if (params.length != parameters.length) {
-      throw ArgumentError.value(
-          params.length, 'params', 'Must match function parameters');
+      throw ArgumentError.value(params.length, 'params', 'Must match function parameters');
     }
 
     final sink = LengthTrackingByteSink()
       //First four bytes to identify the function with its parameters
       ..add(keccakUtf8(encodeName()).sublist(0, 4));
 
-    TupleType(parameters.map((param) => param.type).toList())
-        .encode(params, sink);
+    TupleType(parameters.map((param) => param.type).toList()).encode(params, sink);
 
     return sink.asBytes();
   }
@@ -277,6 +275,11 @@ class ContractEvent {
 
   ContractEvent(this.anonymous, this.name, this.components);
 
+  @override
+  String toString() {
+    return 'ContractEvent{anonymous: $anonymous, name: $name, components: $components, _signature: $_signature}';
+  }
+
   Uint8List _signature;
 
   /// The signature of this event, which is the keccak hash of the event's name
@@ -305,10 +308,7 @@ class ContractEvent {
     final topicOffset = anonymous ? 0 : 1;
 
     // non-indexed parameters are decoded like a tuple
-    final notIndexed = components
-        .where((c) => !c.indexed)
-        .map((c) => c.parameter.type)
-        .toList();
+    final notIndexed = components.where((c) => !c.indexed).map((c) => c.parameter.type).toList();
     final tuple = TupleType(notIndexed);
 
     final decodedNotIndexed = tuple.decode(hexToBytes(data).buffer, 0).data;
@@ -390,11 +390,9 @@ class CompositeFunctionParameter extends FunctionParameter<dynamic> {
   /// `S` and [arrayLengths] of `[3, null, 4]`.
   final List<int> arrayLengths;
 
-  CompositeFunctionParameter(String name, this.components, this.arrayLengths)
-      : super(name, _constructType(components, arrayLengths));
+  CompositeFunctionParameter(String name, this.components, this.arrayLengths) : super(name, _constructType(components, arrayLengths));
 
-  static AbiType<dynamic> _constructType(
-      List<FunctionParameter> components, List<int> arrayLengths) {
+  static AbiType<dynamic> _constructType(List<FunctionParameter> components, List<int> arrayLengths) {
     AbiType type = TupleType(components.map((c) => c.type).toList());
 
     for (final len in arrayLengths) {
