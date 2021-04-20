@@ -258,8 +258,14 @@ class ContractFunction {
     final tuple = TupleType(outputs.map((p) => p.type).toList());
     final buffer = hexToBytes(data).buffer;
 
-    final parsedData = tuple.decode(buffer, 0);
-    return parsedData.data;
+    try {
+      final parsedData = tuple.decode(buffer, 0);
+      return parsedData.data;
+      // ignore: avoid_catches_without_on_clauses
+    } catch (e, trace) {
+      print('debugX - decodeReturnValues error, data=$data,   err=$e, trace:$trace');
+      rethrow;
+    }
   }
 }
 

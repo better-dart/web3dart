@@ -41,7 +41,7 @@ class JsonRPC {
       body: json.encode(requestPayload),
     );
 
-    logger.i('web3dart - jsonRPC: post done, url=$url, req:$requestPayload, resp:${response?.body}');
+    logger.i('debugX - web3dart jsonRPC: post done, url=$url, req:$requestPayload, resp:${response?.body}');
 
     final data = json.decode(response.body) as Map<String, dynamic>;
     final id = data['id'] as int;
