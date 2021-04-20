@@ -15,6 +15,11 @@ class DeployedContract {
 
   DeployedContract(this.abi, this.address);
 
+  @override
+  String toString() {
+    return 'DeployedContract{abi: $abi, address: $address}';
+  }
+
   /// Get a list of all functions defined by the contract ABI.
   List<ContractFunction> get functions => abi.functions;
 
@@ -25,16 +30,14 @@ class DeployedContract {
   /// the given name. As solidity supports function overloading, this will
   /// return a list as only a combination of name and types will uniquely find
   /// a function.
-  Iterable<ContractFunction> findFunctionsByName(String name) =>
-      functions.where((f) => f.name == name);
+  Iterable<ContractFunction> findFunctionsByName(String name) => functions.where((f) => f.name == name);
 
   /// Finds the external or public function defined by the contract that has the
   /// provided [name].
   ///
   /// If no, or more than one function matches that description, this method
   /// will throw.
-  ContractFunction function(String name) =>
-      functions.singleWhere((f) => f.name == name);
+  ContractFunction function(String name) => functions.singleWhere((f) => f.name == name);
 
   /// Finds the event defined by the contract that has the matching [name].
   ///
@@ -44,6 +47,5 @@ class DeployedContract {
   /// Finds all methods that are constructors of this contract.
   ///
   /// Note that the library at the moment does not support creating contracts.
-  Iterable<ContractFunction> get constructors =>
-      functions.where((t) => t.isConstructor);
+  Iterable<ContractFunction> get constructors => functions.where((t) => t.isConstructor);
 }

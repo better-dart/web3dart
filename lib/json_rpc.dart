@@ -30,11 +30,16 @@ class JsonRPC {
       'id': _currentRequestId++,
     };
 
+    ///
+    /// POST:
+    ///
     final response = await client.post(
       url,
       headers: {'Content-Type': 'application/json'},
       body: json.encode(requestPayload),
     );
+
+    print('web3dart - jsonRPC: post done, url=$url, req:$requestPayload, resp:$response');
 
     final data = json.decode(response.body) as Map<String, dynamic>;
     final id = data['id'] as int;

@@ -60,6 +60,12 @@ class ContractAbi {
 
   ContractAbi(this.name, this.functions, this.events);
 
+
+  @override
+  String toString() {
+    return 'ContractAbi{name: $name, functions: $functions, events: $events}';
+  }
+
   factory ContractAbi.fromJson(String jsonData, String name) {
     final data = json.decode(jsonData);
     final functions = <ContractFunction>[];

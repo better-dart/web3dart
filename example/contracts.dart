@@ -1,20 +1,17 @@
 import 'dart:io';
 
 import 'package:http/http.dart';
-import 'package:web3dart/web3dart.dart';
 import 'package:path/path.dart' show join, dirname;
+import 'package:web3dart/web3dart.dart';
 import 'package:web_socket_channel/io.dart';
 
 const String rpcUrl = 'http://localhost:7545';
 const String wsUrl = 'ws://localhost:7545';
 
-const String privateKey =
-    '85d2242ae1b7759934d4b0d4f0d62d666cf7d73e21dbd09d73c7de266b72a25a';
+const String privateKey = '85d2242ae1b7759934d4b0d4f0d62d666cf7d73e21dbd09d73c7de266b72a25a';
 
-final EthereumAddress contractAddr =
-    EthereumAddress.fromHex('0xf451659CF5688e31a31fC3316efbcC2339A490Fb');
-final EthereumAddress receiver =
-    EthereumAddress.fromHex('0x6c87E1a114C3379BEc929f6356c5263d62542C13');
+final EthereumAddress contractAddr = EthereumAddress.fromHex('0xf451659CF5688e31a31fC3316efbcC2339A490Fb');
+final EthereumAddress receiver = EthereumAddress.fromHex('0x6c87E1a114C3379BEc929f6356c5263d62542C13');
 
 final File abiFile = File(join(dirname(Platform.script.path), 'abi.json'));
 
@@ -63,8 +60,11 @@ Future<void> main() async {
 
   // read the contract abi and tell web3dart where it's deployed (contractAddr)
   final abiCode = await abiFile.readAsString();
-  final contract =
-      DeployedContract(ContractAbi.fromJson(abiCode, 'MetaCoin'), contractAddr);
+
+  ///
+  /// 合约调用示例:
+  ///
+  final contract = DeployedContract(ContractAbi.fromJson(abiCode, 'MetaCoin'), contractAddr);
 
   // extracting some functions and events that we'll need later
   final transferEvent = contract.event('Transfer');
@@ -72,10 +72,7 @@ Future<void> main() async {
   final sendFunction = contract.function('sendCoin');
 
   // listen for the Transfer event when it's emitted by the contract above
-  final subscription = client
-      .events(FilterOptions.events(contract: contract, event: transferEvent))
-      .take(1)
-      .listen((event) {
+  final subscription = client.events(FilterOptions.events(contract: contract, event: transferEvent)).take(1).listen((event) {
     final decoded = transferEvent.decodeResults(event.topics, event.data);
 
     final from = decoded[0] as EthereumAddress;
@@ -86,8 +83,7 @@ Future<void> main() async {
   });
 
   // check our balance in MetaCoins by calling the appropriate function
-  final balance = await client.call(
-      contract: contract, function: balanceFunction, params: [ownAddress]);
+  final balance = await client.call(contract: contract, function: balanceFunction, params: [ownAddress]);
   print('We have ${balance.first} MetaCoins');
 
   // send all our MetaCoins to the other address by calling the sendCoin
