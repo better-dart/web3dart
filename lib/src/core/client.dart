@@ -244,10 +244,32 @@ class Web3Client {
   /// included in a mined block, can be used to obtain detailed information
   /// about the transaction.
   Future<String> sendTransaction(Credentials cred, Transaction transaction, {int chainId = 1, bool fetchChainIdFromNetworkId = false}) async {
-    final signed = await signTransaction(cred, transaction, chainId: chainId, fetchChainIdFromNetworkId: fetchChainIdFromNetworkId);
+    ///
+    /// todo x: 先补全 tx 数据, 再签名, 生成签名结果.
+    ///   sign tx, then send rawTx
+    ///   swap token 和 transfer 的差异, 在 data 和 value 部分.
+    ///
+    ///
+    final signed = await signTransaction(
+      /// todo x, 关键参数
+      cred,
 
-    return _makeRPCCall('eth_sendRawTransaction', [bytesToHex(signed, include0x: true, padToEvenLength: true)]);
+      /// todo x, 交易数据
+      transaction,
+      chainId: chainId,
+
+      /// todo x: 此参数, 通过 rpc 查询chainID
+      fetchChainIdFromNetworkId: fetchChainIdFromNetworkId,
+    );
+
+    /// todo x: 广播交易, send rawTx
+    return _makeRPCCall('eth_sendRawTransaction', [
+      /// todo x: 0x prefix
+      bytesToHex(signed, include0x: true, padToEvenLength: true),
+    ]);
   }
+
+  /// todo x:
 
   /// Signs the [transaction] with the credentials [cred]. The transaction will
   /// not be sent.
@@ -256,14 +278,21 @@ class Web3Client {
   ///  - [bytesToHex], which can be used to get the more common hexadecimal
   /// representation of the transaction.
   Future<Uint8List> signTransaction(Credentials cred, Transaction transaction, {int chainId = 1, bool fetchChainIdFromNetworkId = false}) async {
+    ///
+    ///
+    /// todo x: 这一步, 返回完整有效的 tx 数据
+    ///
     final signingInput = await _fillMissingData(
       credentials: cred,
       transaction: transaction,
       chainId: chainId,
+
+      /// todo x: 此参数, 自动查询获取 chainID, 有网络开销
       loadChainIdFromNetwork: fetchChainIdFromNetworkId,
       client: this,
     );
 
+    /// todo x: sign tx, 这一波完成签名动作, 补全
     return _operations.signTransaction(signingInput);
   }
 

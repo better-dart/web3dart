@@ -34,6 +34,12 @@ class Transaction {
   /// have already been sent by [from].
   final int nonce;
 
+
+  @override
+  String toString() {
+    return 'Transaction{from: $from, to: $to, maxGas: $maxGas, gasPrice: $gasPrice, value: $value, data: $data, nonce: $nonce}';
+  }
+
   Transaction(
       {this.from,
       this.to,

@@ -31,6 +31,11 @@ abstract class Credentials {
     return uint8ListFromList(r + s + v);
   }
 
+  ///
+  ///
+  /// todo x:
+  ///
+
   /// Signs the [payload] with a private key and returns the obtained
   /// signature.
   Future<MsgSignature> signToSignature(Uint8List payload, {int chainId});
@@ -74,8 +79,7 @@ class EthPrivateKey extends Credentials {
 
   @override
   Future<EthereumAddress> extractAddress() async {
-    return _cachedAddress ??= EthereumAddress(
-        publicKeyToAddress(privateKeyBytesToPublic(privateKey)));
+    return _cachedAddress ??= EthereumAddress(publicKeyToAddress(privateKeyBytesToPublic(privateKey)));
   }
 
   @override
@@ -84,8 +88,7 @@ class EthPrivateKey extends Credentials {
 
     // https://github.com/ethereumjs/ethereumjs-util/blob/8ffe697fafb33cefc7b7ec01c11e3a7da787fe0e/src/signature.ts#L26
     // be aware that signature.v already is recovery + 27
-    final chainIdV =
-        chainId != null ? (signature.v - 27 + (chainId * 2 + 35)) : signature.v;
+    final chainIdV = chainId != null ? (signature.v - 27 + (chainId * 2 + 35)) : signature.v;
 
     return MsgSignature(signature.r, signature.s, chainIdV);
   }

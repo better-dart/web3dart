@@ -8,6 +8,11 @@ class _SigningInput {
   _SigningInput({this.transaction, this.credentials, this.chainId});
 }
 
+///
+///
+///
+/// todo x:
+///
 Future<_SigningInput> _fillMissingData({
   @required Credentials credentials,
   @required Transaction transaction,
@@ -18,14 +23,27 @@ Future<_SigningInput> _fillMissingData({
   assert(credentials != null);
   assert(transaction != null);
   assert(loadChainIdFromNetwork != null);
-  assert(!loadChainIdFromNetwork || chainId != null,
-      "You can't specify loadChainIdFromNetwork and specify a custom chain id!");
+  assert(!loadChainIdFromNetwork || chainId != null, "You can't specify loadChainIdFromNetwork and specify a custom chain id!");
+
+  ///
+  ///
+  ///
+  ///
 
   // apply default values to null fields
   var modifiedTransaction = transaction.copyWith(
+    ///
+    ///
+    /// todo x: 关键处理, 决定是 send coin, or send token
+    ///
     value: transaction.value ?? EtherAmount.zero(),
     maxGas: transaction.maxGas ?? 90000,
     from: transaction.from ?? await credentials.extractAddress(),
+
+    ///
+    ///
+    /// todo x: 关键处理, 决定是 send coin, or send token
+    ///
     data: transaction.data ?? Uint8List(0),
   );
 
@@ -34,8 +52,7 @@ Future<_SigningInput> _fillMissingData({
     resolvedChainId = chainId;
   } else {
     if (client == null) {
-      throw ArgumentError(
-          "Can't load chain id from network when no client is set");
+      throw ArgumentError("Can't load chain id from network when no client is set");
     }
 
     resolvedChainId = await client.getNetworkId();
@@ -66,6 +83,10 @@ Future<_SigningInput> _fillMissingData({
           'client.');
     }
 
+    ///
+    ///
+    ///
+    ///
     modifiedTransaction = modifiedTransaction.copyWith(
       nonce: await client.getTransactionCount(modifiedTransaction.from),
     );
@@ -78,18 +99,29 @@ Future<_SigningInput> _fillMissingData({
   );
 }
 
-Future<Uint8List> _signTransaction(
-    Transaction transaction, Credentials c, int chainId) async {
-  final innerSignature =
-      chainId == null ? null : MsgSignature(BigInt.zero, BigInt.zero, chainId);
+///
+/// todo x: sign
+///
+///
+Future<Uint8List> _signTransaction(Transaction transaction, Credentials c, int chainId) async {
+  final innerSignature = chainId == null ? null : MsgSignature(BigInt.zero, BigInt.zero, chainId);
 
-  final encoded =
-      uint8ListFromList(rlp.encode(_encodeToRlp(transaction, innerSignature)));
+  final encoded = uint8ListFromList(rlp.encode(_encodeToRlp(transaction, innerSignature)));
+
+  ///
+  /// todo x:
+  ///
   final signature = await c.signToSignature(encoded, chainId: chainId);
 
+  ///
+  ///
+  ///
   return uint8ListFromList(rlp.encode(_encodeToRlp(transaction, signature)));
 }
 
+///
+///
+///
 List<dynamic> _encodeToRlp(Transaction transaction, MsgSignature signature) {
   final list = [
     transaction.nonce,

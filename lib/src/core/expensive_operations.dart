@@ -16,11 +16,18 @@ class _ExpensiveOperations {
     return runner.run(_internalCreatePrivateKey, privateKey);
   }
 
+  ///
+  /// todo x: signTx:
+  ///
   Future<Uint8List> signTransaction(_SigningInput t) {
     if (!t.credentials.isolateSafe) {
       // sign on this isolate
       return internalSign(t);
     } else {
+      ///
+      ///
+      ///
+      ///
       return runner.run(internalSign, t);
     }
   }
@@ -34,6 +41,13 @@ Future<EthPrivateKey> _internalCreatePrivateKey(String hex) async {
   return key;
 }
 
+///
+/// todo x:
+///
 Future<Uint8List> internalSign(_SigningInput t) {
+  ///
+  ///
+  ///
+  ///
   return _signTransaction(t.transaction, t.credentials, t.chainId);
 }
