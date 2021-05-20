@@ -33,7 +33,7 @@ abstract class Credentials {
 
   ///
   ///
-  /// todo x:
+  /// todo x: 抽象接口, 使用具体实现
   ///
 
   /// Signs the [payload] with a private key and returns the obtained
@@ -53,6 +53,11 @@ abstract class Credentials {
     return sign(concat, chainId: chainId);
   }
 }
+
+///
+///
+/// todo x: 具体实现, 关键方法: EthPrivateKey.signToSignature()
+///
 
 /// Credentials that can sign payloads with an Ethereum private key.
 class EthPrivateKey extends Credentials {
@@ -82,8 +87,17 @@ class EthPrivateKey extends Credentials {
     return _cachedAddress ??= EthereumAddress(publicKeyToAddress(privateKeyBytesToPublic(privateKey)));
   }
 
+  ///
+  /// todo x: 关键方法
+  ///
+  ///
   @override
   Future<MsgSignature> signToSignature(Uint8List payload, {int chainId}) async {
+    ///
+    ///
+    /// todo x: 调用 外部库 pointycastle lib, do sign.
+    ///   `lib/src/crypto/secp256k1.dart`
+    ///
     final signature = _globalSign(keccak256(payload), privateKey);
 
     // https://github.com/ethereumjs/ethereumjs-util/blob/8ffe697fafb33cefc7b7ec01c11e3a7da787fe0e/src/signature.ts#L26

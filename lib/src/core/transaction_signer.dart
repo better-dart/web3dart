@@ -103,15 +103,15 @@ Future<_SigningInput> _fillMissingData({
 /// todo x: sign
 ///
 ///
-Future<Uint8List> _signTransaction(Transaction transaction, Credentials c, int chainId) async {
+Future<Uint8List> _signTransaction(Transaction transaction, Credentials cred, int chainId) async {
   final innerSignature = chainId == null ? null : MsgSignature(BigInt.zero, BigInt.zero, chainId);
 
   final encoded = uint8ListFromList(rlp.encode(_encodeToRlp(transaction, innerSignature)));
 
   ///
-  /// todo x:
+  /// todo x: EthPrivateKey.signToSignature()
   ///
-  final signature = await c.signToSignature(encoded, chainId: chainId);
+  final signature = await cred.signToSignature(encoded, chainId: chainId);
 
   ///
   ///

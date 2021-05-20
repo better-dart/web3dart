@@ -50,6 +50,11 @@ class MsgSignature {
   MsgSignature(this.r, this.s, this.v);
 }
 
+///
+///
+/// todo x: 签名算法:
+///
+///
 /// Signs the hashed data in [messageHash] using the given private key.
 MsgSignature sign(Uint8List messageHash, Uint8List privateKey) {
   final digest = SHA256Digest();
@@ -57,6 +62,10 @@ MsgSignature sign(Uint8List messageHash, Uint8List privateKey) {
   final key = ECPrivateKey(bytesToInt(privateKey), _params);
 
   signer.init(true, PrivateKeyParameter(key));
+
+  ///
+  /// todo x: call pointycastle lib, do sign
+  ///
   var sig = signer.generateSignature(messageHash) as ECSignature;
 
   /*
@@ -88,8 +97,7 @@ MsgSignature sign(Uint8List messageHash, Uint8List privateKey) {
   }
 
   if (recId == -1) {
-    throw Exception(
-        'Could not construct a recoverable key. This should never happen');
+    throw Exception('Could not construct a recoverable key. This should never happen');
   }
 
   return MsgSignature(sig.r, sig.s, recId + 27);
@@ -126,22 +134,18 @@ Uint8List ecRecover(Uint8List messageHash, MsgSignature signatureData) {
 /// Given an arbitrary message hash, an Ethereum message signature encoded in bytes and
 /// a public key encoded in bytes, confirms whether that public key was used to sign
 /// the message or not.
-bool isValidSignature(
-    Uint8List messageHash, MsgSignature signatureData, Uint8List publicKey) {
+bool isValidSignature(Uint8List messageHash, MsgSignature signatureData, Uint8List publicKey) {
   final recoveredPublicKey = ecRecover(messageHash, signatureData);
   return bytesToHex(publicKey) == bytesToHex(recoveredPublicKey);
 }
 
-BigInt _recoverFromSignature(
-    int recId, ECSignature sig, Uint8List msg, ECDomainParameters params) {
+BigInt _recoverFromSignature(int recId, ECSignature sig, Uint8List msg, ECDomainParameters params) {
   final n = params.n;
   final i = BigInt.from(recId ~/ 2);
   final x = sig.r + (i * n);
 
   //Parameter q of curve
-  final prime = BigInt.parse(
-      'fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f',
-      radix: 16);
+  final prime = BigInt.parse('fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f', radix: 16);
   if (x.compareTo(prime) >= 0) return null;
 
   final R = _decompressKey(x, (recId & 1) == 1, params.curve);
