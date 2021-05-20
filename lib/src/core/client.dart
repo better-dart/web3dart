@@ -279,12 +279,12 @@ class Web3Client {
   ///
   /// ext: only do send:
   ///
-  Future<String> sendRawTx(Uint8List signed) async {
-    /// todo x: 广播交易, send rawTx
-    return _makeRPCCall('eth_sendRawTransaction', [
-      /// todo x: 0x prefix
-      bytesToHex(signed, include0x: true, padToEvenLength: true),
-    ]);
+  Future<String> sendRawTx({Uint8List signed, String signedStr}) async {
+    assert(signed != null || signedStr != null);
+    final payload = signedStr ?? bytesToHex(signed, include0x: true, padToEvenLength: true);
+
+    /// todo x: 广播交易, send rawTx, 0x prefix
+    return _makeRPCCall<String>('eth_sendRawTransaction', [payload]);
   }
 
   /// todo x:
