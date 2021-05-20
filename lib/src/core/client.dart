@@ -279,7 +279,7 @@ class Web3Client {
   ///
   /// ext: only do send:
   ///
-  Future<String> rpcSendRawTx(Uint8List signed) async {
+  Future<String> sendRawTx(Uint8List signed) async {
     /// todo x: 广播交易, send rawTx
     return _makeRPCCall('eth_sendRawTransaction', [
       /// todo x: 0x prefix
