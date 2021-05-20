@@ -54,6 +54,13 @@ class Web3Client {
   }
 
   ///
+  /// 暴露对外使用:
+  ///
+  Future<T> doRpcCall<T>(String function, [List<dynamic> params]) async {
+    return _makeRPCCall<T>(function, params);
+  }
+
+  ///
   /// rpc call:
   ///
   Future<T> _makeRPCCall<T>(String function, [List<dynamic> params]) async {
@@ -262,6 +269,17 @@ class Web3Client {
       fetchChainIdFromNetworkId: fetchChainIdFromNetworkId,
     );
 
+    /// todo x: 广播交易, send rawTx
+    return _makeRPCCall('eth_sendRawTransaction', [
+      /// todo x: 0x prefix
+      bytesToHex(signed, include0x: true, padToEvenLength: true),
+    ]);
+  }
+
+  ///
+  /// ext: only do send:
+  ///
+  Future<String> rpcSendRawTx(Uint8List signed) async {
     /// todo x: 广播交易, send rawTx
     return _makeRPCCall('eth_sendRawTransaction', [
       /// todo x: 0x prefix
